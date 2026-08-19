@@ -22,8 +22,10 @@
         @endif
     </p>
 
+    @if ($reservation->status == 0)
     <a href="{{ route('reservation.edit', $reservation->id) }}">予約を編集する</a>
     <a href="{{ route('reservation.cancel_confirm', $reservation->id) }}">予約をキャンセルする</a>
+    @endif
 
     <a href="{{ route('reservation.list') }}">予約一覧へ戻る</a>
 </body>

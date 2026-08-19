@@ -16,40 +16,49 @@ Route::get('/', function () {
 });
 
 Route::get('/equipments', 'EquipmentController@index')->name('equipment.list');
+
 Route::get('/equipments/{id}', 'EquipmentController@show')->name('equipment.detail');
-Route::get('/reservations/create/{equipment_id}', 'ReservationController@create')
-    ->middleware('auth')
-    ->name('reservation.create');
-Route::post('/reservations/confirm', 'ReservationController@confirm')->name('reservation.confirm');Route::post('/reservations/confirm', 'ReservationController@confirm')
+
+Route::post('/reservations/confirm', 'ReservationController@confirm')
     ->middleware('auth')
     ->name('reservation.confirm');
-Route::post('/reservations/store', 'ReservationController@store')->name('reservation.store');Route::post('/reservations/store', 'ReservationController@store')
+
+Route::resource('reservations', 'ReservationController')
+    ->only(['index','create', 'store', 'show', 'edit','update', 'destroy'])
     ->middleware('auth')
-    ->name('reservation.store');
-Route::get('/reservations', 'ReservationController@index')->name('reservation.list');Route::get('/reservations', 'ReservationController@index')
-    ->middleware('auth')
-    ->name('reservation.list');
-Route::get('/reservations/{id}', 'ReservationController@show')->name('reservation.detail');Route::get('/reservations/{id}', 'ReservationController@show')
-    ->middleware('auth')
-    ->name('reservation.detail');
-Route::get('/reservations/{id}/edit', 'ReservationController@edit')->name('reservation.edit');Route::get('/reservations/{id}/edit', 'ReservationController@edit')
-    ->middleware('auth')
-    ->name('reservation.edit');
-Route::post('/reservations/{id}/edit/confirm', 'ReservationController@editConfirm')->name('reservation.edit_confirm');Route::post('/reservations/{id}/edit/confirm', 'ReservationController@editConfirm')
+    ->names([
+        'index' => 'reservation.list',
+        'create' => 'reservation.create',
+        'store' => 'reservation.store',
+        'show' => 'reservation.detail',
+        'edit' => 'reservation.edit',
+        'update' => 'reservation.update',
+        'destroy' => 'reservation.destroy',
+    ]);
+
+Route::post('/reservations/{id}/edit/confirm', 'ReservationController@editConfirm')
     ->middleware('auth')
     ->name('reservation.edit_confirm');
-Route::post('/reservations/{id}/update', 'ReservationController@update')->name('reservation.update');Route::post('/reservations/{id}/update', 'ReservationController@update')
-    ->middleware('auth')
-    ->name('reservation.update');
-Route::get('/reservations/{id}/cancel', 'ReservationController@cancelConfirm')->name('reservation.cancel_confirm');Route::get('/reservations/{id}/cancel', 'ReservationController@cancelConfirm')
+
+Route::get('/reservations/{id}/cancel', 'ReservationController@cancelConfirm')
     ->middleware('auth')
     ->name('reservation.cancel_confirm');
-Route::post('/reservations/{id}/cancel', 'ReservationController@cancel')->name('reservation.cancel');Route::post('/reservations/{id}/cancel', 'ReservationController@cancel')
-    ->middleware('auth')
-    ->name('reservation.cancel');
+
 Route::get('/mypage', 'MypageController@index')
     ->middleware('auth')
     ->name('mypage');
-Auth::routes();
+
+Route::get('/password/reset-request', 'PasswordResetController@showRequestForm')
+->name('password.reset.request');
+
+Route::post('/password/reset-request', 'PasswordResetController@sendResetLink')
+    ->name('password.reset.send');
+
+Route::get('/password/reset/{token}', 'PasswordResetController@showResetForm')
+->name('password.reset.form');
+Auth::routes([
+    'register' => false,
+    'reset' => false,
+]);
 
 Route::get('/home', 'HomeController@index')->name('home');

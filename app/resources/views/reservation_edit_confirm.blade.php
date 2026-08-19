@@ -12,7 +12,8 @@
     <p>変更後の利用終了日時：{{ $end_datetime }}</p>
 
     <form action="{{ route('reservation.update', $reservation->id) }}" method="POST">
-        @csrf
+    @csrf
+    @method('PUT')
 
         <input type="hidden" name="start_datetime" value="{{ $start_datetime }}">
         <input type="hidden" name="end_datetime" value="{{ $end_datetime }}">

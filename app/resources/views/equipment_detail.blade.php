@@ -12,7 +12,9 @@
     <p>利用可能終了時間：{{ $equipment->available_time_end }}</p>
     <p>説明：{{ $equipment->description }}</p>
 
-    <a href="{{ route('reservation.create', $equipment->id) }}">この設備を予約する</a>
+    <a href="{{ route('reservation.create', ['equipment_id' => $equipment->id]) }}">
+    この設備を予約する
+    </a>
 
     <a href="{{ route('equipment.list') }}">設備一覧へ戻る</a>
 </body>

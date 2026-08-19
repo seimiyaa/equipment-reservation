@@ -9,6 +9,13 @@ class MypageController extends Controller
 {
     public function index()
     {
+        \App\Reservation::where('user_id', Auth::id())
+            ->where('status', 0)
+            ->where('end_datetime', '<', now())
+            ->update([
+                'status' => 1,
+            ]);
+
         $upcomingReservations = \App\Reservation::with('equipment')
             ->where('user_id', Auth::id())
             ->where('status', 0)
@@ -18,6 +25,7 @@ class MypageController extends Controller
 
         $pastReservations = \App\Reservation::with('equipment')
             ->where('user_id', Auth::id())
+            ->where('status', '!=', 2)
             ->where(function ($query) {
             $query->where('status', 1)
             ->orWhere('start_datetime', '<', now());

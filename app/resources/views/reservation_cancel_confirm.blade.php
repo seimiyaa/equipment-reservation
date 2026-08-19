@@ -13,8 +13,10 @@
 
     <p>この予約をキャンセルしますか？</p>
 
-    <form action="{{ route('reservation.cancel', $reservation->id) }}" method="POST">
+    <form action="{{ route('reservation.destroy', $reservation->id) }}" method="POST">
         @csrf
+        @method('DELETE')
+
         <button type="submit">キャンセルする</button>
     </form>
 
