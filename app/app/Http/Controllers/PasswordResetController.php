@@ -40,4 +40,21 @@ class PasswordResetController extends Controller
 
         return view('password_reset_form', compact('user', 'token'));
     }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = \App\User::where('reset_token', $request->token)->firstOrFail();
+
+        $user->password = bcrypt($request->password);
+        $user->reset_token = null;
+        $user->save();
+
+        return redirect()->route('login')
+            ->with('status', 'パスワードを変更しました。');
+    }
 }

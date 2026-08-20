@@ -56,6 +56,22 @@ Route::post('/password/reset-request', 'PasswordResetController@sendResetLink')
 
 Route::get('/password/reset/{token}', 'PasswordResetController@showResetForm')
 ->name('password.reset.form');
+
+Route::post('/password/reset', 'PasswordResetController@resetPassword')
+    ->name('password.reset.update');
+
+Route::get('/admin', 'AdminController@index')
+    ->middleware(['auth', 'admin'])
+    ->name('admin.top');
+
+Route::get('/admin/reservations', 'AdminReservationController@index')
+    ->middleware(['auth', 'admin'])
+    ->name('admin.reservations');
+
+Route::get('/admin/reservations/{id}', 'AdminReservationController@show')
+    ->middleware(['auth', 'admin'])
+    ->name('admin.reservation.detail');
+
 Auth::routes([
     'register' => false,
     'reset' => false,
