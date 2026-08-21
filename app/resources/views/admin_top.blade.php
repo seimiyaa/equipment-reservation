@@ -9,9 +9,9 @@
 
     <ul>
         <li><a href="{{ route('admin.reservations') }}">予約・履歴一覧</a></li>
-        <li><a href="#">設備管理</a></li>
-        <li><a href="#">ユーザー管理</a></li>
-        <li><a href="#">ユーザー利用状況レポート</a></li>
+        <li><a href="{{ route('admin.equipments') }}">設備管理</a></li>
+        <li><a href="{{ route('admin.users') }}">ユーザー管理</a></li>
+        <li><a href="{{ route('admin.user.report') }}">ユーザー利用状況レポート</a></li>
     </ul>
 </body>
 </html>
