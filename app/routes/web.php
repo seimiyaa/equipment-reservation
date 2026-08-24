@@ -47,6 +47,10 @@ Route::resource('reservations', 'ReservationController')
         'destroy' => 'reservation.destroy',
     ]);
 
+Route::post('/reservations/check-availability', 'ReservationController@checkAvailability')
+->middleware('auth')
+->name('reservation.check_availability');
+
 // 予約確認
 Route::post('/reservations/confirm', 'ReservationController@confirm')
     ->middleware('auth')

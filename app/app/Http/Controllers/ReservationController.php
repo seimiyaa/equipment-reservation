@@ -256,4 +256,31 @@ class ReservationController extends Controller
 
         return redirect()->route('reservation.detail', $reservation->id);
     }
+
+    public function checkAvailability(Request $request)
+    {
+        $request->validate([
+            'equipment_id' => 'required',
+            'start_datetime' => 'required|date',
+            'end_datetime' => 'required|date|after:start_datetime',
+        ]);
+
+        $overlap = Reservation::where('equipment_id', $request->equipment_id)
+            ->where('status', '!=', 2)
+            ->where('start_datetime', '<', $request->end_datetime)
+            ->where('end_datetime', '>', $request->start_datetime)
+            ->exists();
+
+        if ($overlap) {
+            return response()->json([
+                'available' => false,
+                'message' => 'その時間帯はすでに予約されています。',
+            ]);
+        }
+
+        return response()->json([
+            'available' => true,
+            'message' => 'その時間帯は予約できます。',
+        ]);
+    }
 }
