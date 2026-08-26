@@ -25,7 +25,7 @@ class AdminUserController extends Controller
         $request->validate([
             'name' => 'required|max:50',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8',
+            'password' => 'required|min:8|confirmed',
             'role' => 'required|in:0,1',
         ]);
 
@@ -60,6 +60,11 @@ class AdminUserController extends Controller
     public function report()
     {
         $users = \App\User::withCount('reservations')
+            ->with([
+                'reservations' => function ($query) {
+                    $query->orderBy('start_datetime', 'desc');
+                }
+            ])
             ->where('del_flg', false)
             ->orderBy('id', 'asc')
             ->get();

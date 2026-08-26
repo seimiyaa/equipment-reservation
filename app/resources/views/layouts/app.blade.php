@@ -33,7 +33,61 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
+                        @auth
+                            @if (Auth::user()->role == 0)
 
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin.top') }}">
+                                        管理者トップ
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin.reservations') }}">
+                                        予約・履歴管理
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin.equipments') }}">
+                                        設備管理
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin.users') }}">
+                                        ユーザー管理
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin.user.report') }}">
+                                        利用状況レポート
+                                    </a>
+                                </li>
+
+                            @else
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('mypage') }}">
+                                        マイページ
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('equipment.list') }}">
+                                        設備一覧
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('reservation.list') }}">
+                                        予約一覧
+                                    </a>
+                                </li>
+
+                            @endif
+                        @endauth
                     </ul>
 
                     <!-- Right Side Of Navbar -->

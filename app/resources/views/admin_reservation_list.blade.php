@@ -1,48 +1,54 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>予約・履歴一覧</title>
-</head>
-<body>
-    <h1>予約・履歴一覧</h1>
+@extends('layouts.app')
 
-    <table border="1">
-        <tr>
-            <th>ユーザー名</th>
-            <th>設備名</th>
-            <th>開始日時</th>
-            <th>終了日時</th>
-            <th>ステータス</th>
-            <th>詳細</th>
-        </tr>
+@section('content')
+<div class="container">
+    <h1 class="mb-4">予約・履歴一覧</h1>
 
-        @foreach ($reservations as $reservation)
-            <tr>
-                <td>{{ $reservation->user->name }}</td>
-                <td>{{ $reservation->equipment->name }}</td>
-                <td>{{ $reservation->start_datetime }}</td>
-                <td>{{ $reservation->end_datetime }}</td>
-                <td>
-                    @if ($reservation->status == 0)
-                        予約中
-                    @elseif ($reservation->status == 1)
-                        利用済
-                    @elseif ($reservation->status == 2)
-                        キャンセル済
-                    @endif
-                </td>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>ユーザー名</th>
+                    <th>設備名</th>
+                    <th>開始日時</th>
+                    <th>終了日時</th>
+                    <th>ステータス</th>
+                    <th>詳細</th>
+                </tr>
+            </thead>
 
-                <td>
-                    <a href="{{ route('admin.reservation.detail', $reservation->id) }}">
-                        詳細を見る
-                    </a>
-                </td>
-                
-            </tr>
-        @endforeach
-    </table>
+            <tbody>
+                @foreach ($reservations as $reservation)
+                    <tr>
+                        <td>{{ $reservation->user->name }}</td>
+                        <td>{{ $reservation->equipment->name }}</td>
+                        <td>{{ $reservation->start_datetime }}</td>
+                        <td>{{ $reservation->end_datetime }}</td>
 
-    <a href="{{ route('admin.top') }}">管理者トップへ戻る</a>
-</body>
-</html>
+                        <td>
+                            @if ($reservation->status == 0)
+                                <span class="badge badge-primary">予約中</span>
+                            @elseif ($reservation->status == 1)
+                                <span class="badge badge-secondary">利用済</span>
+                            @elseif ($reservation->status == 2)
+                                <span class="badge badge-danger">キャンセル済</span>
+                            @endif
+                        </td>
+
+                        <td>
+                            <a href="{{ route('admin.reservation.detail', $reservation->id) }}"
+                               class="btn btn-sm btn-primary">
+                                詳細を見る
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <a href="{{ route('admin.top') }}" class="btn btn-secondary">
+        管理者トップへ戻る
+    </a>
+</div>
+@endsection

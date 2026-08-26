@@ -6,14 +6,26 @@ use Illuminate\Http\Request;
 
 class AdminEquipmentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $equipments = \App\Equipment::with('category')
-            ->where('del_flg', false)
+        $query = \App\Equipment::with('category')
+            ->where('del_flg', false);
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $equipments = $query
             ->orderBy('id', 'asc')
             ->get();
 
-        return view('admin_equipment_list', compact('equipments'));
+        $categories = \App\Category::all();
+
+        return view('admin_equipment_list', compact('equipments', 'categories'));
     }
 
     public function create()
@@ -26,18 +38,28 @@ class AdminEquipmentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'name' => 'required|max:100',
             'category_id' => 'required|exists:categories,id',
-            'available_time_start' => 'required',
-            'available_time_end' => 'required|after:available_time_start',
+            'start_hour' => 'required',
+            'start_minute' => 'required',
+            'end_hour' => 'required',
+            'end_minute' => 'required',
             'description' => 'nullable',
         ]);
+
+        $availableTimeStart = $request->start_hour . ':' . $request->start_minute;
+        $availableTimeEnd = $request->end_hour . ':' . $request->end_minute;
+
+        $imagePath = $request->file('image')
+            ->store('equipments', 'public');
 
         \App\Equipment::create([
             'name' => $request->name,
             'category_id' => $request->category_id,
-            'available_time_start' => $request->available_time_start,
-            'available_time_end' => $request->available_time_end,
+            'image_path' => $imagePath,
+            'available_time_start' => $availableTimeStart,
+            'available_time_end' => $availableTimeEnd,
             'description' => $request->description,
             'del_flg' => false,
         ]);
@@ -56,22 +78,35 @@ class AdminEquipmentController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'name' => 'required|max:100',
             'category_id' => 'required|exists:categories,id',
-            'available_time_start' => 'required',
-            'available_time_end' => 'required|after:available_time_start',
+            'start_hour' => 'required',
+            'start_minute' => 'required',
+            'end_hour' => 'required',
+            'end_minute' => 'required',
             'description' => 'nullable',
         ]);
 
+        $availableTimeStart = $request->start_hour . ':' . $request->start_minute;
+        $availableTimeEnd = $request->end_hour . ':' . $request->end_minute;
+
         $equipment = \App\Equipment::findOrFail($id);
 
-        $equipment->update([
+        $data = [
             'name' => $request->name,
             'category_id' => $request->category_id,
-            'available_time_start' => $request->available_time_start,
-            'available_time_end' => $request->available_time_end,
+            'available_time_start' => $availableTimeStart,
+            'available_time_end' => $availableTimeEnd,
             'description' => $request->description,
-        ]);
+        ];
+
+        if ($request->hasFile('image')) {
+            $data['image_path'] = $request->file('image')
+                ->store('equipments', 'public');
+        }
+
+        $equipment->update($data);
 
         return redirect()->route('admin.equipments');
     }

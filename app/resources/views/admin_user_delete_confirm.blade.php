@@ -1,32 +1,57 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>ユーザー削除確認</title>
-</head>
-<body>
-    <h1>ユーザー削除確認</h1>
+@extends('layouts.app')
 
-    <p>以下のユーザーを削除しますか？</p>
+@section('content')
+<div class="container">
+    <h1 class="mb-4">ユーザー削除確認</h1>
 
-    <p>ユーザー名：{{ $user->name }}</p>
-    <p>メールアドレス：{{ $user->email }}</p>
-    <p>
-        権限：
-        @if ($user->role == 0)
-            管理者
-        @else
-            一般ユーザー
-        @endif
-    </p>
+    <div class="alert alert-warning">
+        <p class="mb-1">本当にこのユーザーを削除しますか？</p>
+        <small>※削除したユーザーは元に戻せません</small>
+    </div>
 
-    <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST">
-    @csrf
-    @method('DELETE')
+    <div class="card">
+        <div class="card-body">
 
-        <button type="submit">削除する</button>
-    </form>
+            <p>
+                <strong>ユーザー名：</strong>
+                {{ $user->name }}
+            </p>
 
-    <a href="{{ route('admin.users') }}">ユーザー一覧へ戻る</a>
-</body>
-</html>
+            <p>
+                <strong>メールアドレス：</strong>
+                {{ $user->email }}
+            </p>
+
+            <p>
+                <strong>権限：</strong>
+
+                @if ($user->role == 0)
+                    管理者
+                @else
+                    一般ユーザー
+                @endif
+            </p>
+
+            <form action="{{ route('admin.user.destroy', $user->id) }}"
+                  method="POST">
+                @csrf
+                @method('DELETE')
+
+                <button type="submit" class="btn btn-danger">
+                    削除する
+                </button>
+
+                <a href="{{ route('admin.users') }}"
+                   class="btn btn-secondary">
+                    ユーザー一覧へ戻る
+                </a>
+
+                <a href="{{ route('admin.top') }}"
+                   class="btn btn-outline-secondary">
+                    管理者トップへ
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
