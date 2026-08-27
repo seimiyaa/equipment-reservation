@@ -11,6 +11,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
+        \App\Category::firstOrCreate(['name' => '会議室']);
+        \App\Category::firstOrCreate(['name' => 'PC']);
+        \App\Category::firstOrCreate(['name' => '机']);
     }
 }

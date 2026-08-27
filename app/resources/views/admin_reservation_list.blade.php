@@ -10,8 +10,7 @@
                 <tr>
                     <th>ユーザー名</th>
                     <th>設備名</th>
-                    <th>開始日時</th>
-                    <th>終了日時</th>
+                    <th>利用日時</th>
                     <th>ステータス</th>
                     <th>詳細</th>
                 </tr>
@@ -22,8 +21,11 @@
                     <tr>
                         <td>{{ $reservation->user->name }}</td>
                         <td>{{ $reservation->equipment->name }}</td>
-                        <td>{{ $reservation->start_datetime }}</td>
-                        <td>{{ $reservation->end_datetime }}</td>
+                        <td>
+                            {{ \Carbon\Carbon::parse($reservation->start_datetime)->format('Y/m/d H:i') }}
+                            ～
+                            {{ \Carbon\Carbon::parse($reservation->end_datetime)->format('H:i') }}
+                        </td>
 
                         <td>
                             @if ($reservation->status == 0)

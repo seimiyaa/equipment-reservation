@@ -1,14 +1,30 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>再設定メール送信</title>
-</head>
-<body>
-    <h1>パスワード再設定</h1>
+@extends('layouts.app')
 
-    <p>パスワード再設定用の案内を送信しました。</p>
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
 
-    <a href="{{ route('login') }}">ログイン画面へ戻る</a>
-</body>
-</html>
+            <div class="card text-center">
+                <div class="card-body">
+
+                    <h1 class="mb-4">
+                        パスワード再設定
+                    </h1>
+
+                    <p class="mb-4">
+                        パスワード再設定用の案内を送信しました。
+                    </p>
+
+                    <a href="{{ route('login') }}"
+                       class="btn btn-primary">
+                        ログイン画面へ戻る
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+@endsection

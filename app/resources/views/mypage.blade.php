@@ -12,8 +12,15 @@
         <div class="card mb-3">
             <div class="card-body">
                 <p>設備名：{{ $reservation->equipment->name }}</p>
-                <p>開始：{{ $reservation->start_datetime }}</p>
-                <p>終了：{{ $reservation->end_datetime }}</p>
+                <p>
+                    開始：
+                    {{ \Carbon\Carbon::parse($reservation->start_datetime)->format('Y/m/d H:i') }}
+                </p>
+
+                <p>
+                    終了：
+                    {{ \Carbon\Carbon::parse($reservation->end_datetime)->format('Y/m/d H:i') }}
+                </p>
 
                 <a href="{{ route('reservation.detail', $reservation->id) }}"
                    class="btn btn-primary">
@@ -29,8 +36,14 @@
         <div class="card mb-3">
             <div class="card-body">
                 <p>設備名：{{ $reservation->equipment->name }}</p>
-                <p>開始：{{ $reservation->start_datetime }}</p>
-                <p>終了：{{ $reservation->end_datetime }}</p>
+                <p>
+                    開始：
+                    {{ \Carbon\Carbon::parse($reservation->start_datetime)->format('Y/m/d H:i') }}
+                </p>
+                <p>
+                    終了：
+                    {{ \Carbon\Carbon::parse($reservation->end_datetime)->format('Y/m/d H:i') }}
+                </p>
 
                 <a href="{{ route('reservation.detail', $reservation->id) }}"
                    class="btn btn-secondary">

@@ -1,24 +1,70 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>新しいパスワード設定</title>
-</head>
-<body>
-    <h1>新しいパスワード設定</h1>
+@extends('layouts.app')
 
-    <form action="{{ route('password.reset.update') }}" method="POST">
-        @csrf
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
 
-        <input type="hidden" name="token" value="{{ $token }}">
+            <div class="card">
+                <div class="card-header">
+                    新しいパスワード設定
+                </div>
 
-        <label>新しいパスワード</label>
-        <input type="password" name="password">
+                <div class="card-body">
 
-        <label>新しいパスワード（確認）</label>
-        <input type="password" name="password_confirmation">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            @foreach ($errors->all() as $error)
+                                <p class="mb-0">{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
 
-        <button type="submit">パスワードを変更する</button>
-    </form>
-</body>
-</html>
+                    <form action="{{ route('password.reset.update') }}"
+                          method="POST">
+                        @csrf
+
+                        <input type="hidden"
+                               name="token"
+                               value="{{ $token }}">
+
+                        <div class="form-group">
+                            <label for="password">
+                                新しいパスワード
+                            </label>
+
+                            <input type="password"
+                                   name="password"
+                                   id="password"
+                                   class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password_confirmation">
+                                新しいパスワード（確認）
+                            </label>
+
+                            <input type="password"
+                                   name="password_confirmation"
+                                   id="password_confirmation"
+                                   class="form-control">
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+                            パスワードを変更する
+                        </button>
+
+                        <a href="{{ route('login') }}"
+                           class="btn btn-secondary">
+                            ログイン画面へ戻る
+                        </a>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+@endsection

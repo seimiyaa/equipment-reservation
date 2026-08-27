@@ -18,14 +18,44 @@ class ReservationController extends Controller
     public function confirm(Request $request)
     {
         $request->validate([
-        'start_datetime' => 'required|date|after_or_equal:now',
-        'end_datetime' => 'required|date|after:start_datetime',
+            'start_date' => 'required|date',
+            'start_hour' => 'required',
+            'start_minute' => 'required',
+            'end_date' => 'required|date',
+            'end_hour' => 'required',
+            'end_minute' => 'required',
         ]);
+
+        $startDatetime =
+            $request->start_date . ' ' .
+            $request->start_hour . ':' .
+            $request->start_minute;
+
+        $endDatetime =
+            $request->end_date . ' ' .
+            $request->end_hour . ':' .
+            $request->end_minute;
+
+        if (strtotime($startDatetime) < time()) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'time' => '現在時刻より後の日時を指定してください。',
+                ]);
+        }
+
+        if (strtotime($endDatetime) <= strtotime($startDatetime)) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'time' => '終了日時は開始日時より後にしてください。',
+                ]);
+        }
 
         $equipment = \App\Equipment::findOrFail($request->equipment_id);
 
-        $startTime = date('H:i:s', strtotime($request->start_datetime));
-        $endTime = date('H:i:s', strtotime($request->end_datetime));
+        $startTime = date('H:i:s', strtotime($startDatetime));
+        $endTime = date('H:i:s', strtotime($endDatetime));
 
         if (
             $startTime < $equipment->available_time_start ||
@@ -39,10 +69,10 @@ class ReservationController extends Controller
         }
 
         $overlap = Reservation::where('equipment_id', $request->equipment_id)
-        ->where('status', '!=', 2)
-        ->where('start_datetime', '<', $request->end_datetime)
-        ->where('end_datetime', '>', $request->start_datetime)
-        ->exists();
+            ->where('status', '!=', 2)
+            ->where('start_datetime', '<', $endDatetime)
+            ->where('end_datetime', '>', $startDatetime)
+            ->exists();
 
         if ($overlap) {
             return back()
@@ -54,8 +84,8 @@ class ReservationController extends Controller
 
         return view('reservation_confirm', [
             'equipment' => $equipment,
-            'start_datetime' => $request->start_datetime,
-            'end_datetime' => $request->end_datetime,
+            'start_datetime' => $startDatetime,
+            'end_datetime' => $endDatetime,
         ]);
     }
 
@@ -140,17 +170,47 @@ class ReservationController extends Controller
     public function editConfirm(Request $request, $id)
     {
         $request->validate([
-            'start_datetime' => 'required|date|after_or_equal:now',
-            'end_datetime' => 'required|date|after:start_datetime',
+            'start_date' => 'required|date',
+            'start_hour' => 'required',
+            'start_minute' => 'required',
+            'end_date' => 'required|date',
+            'end_hour' => 'required',
+            'end_minute' => 'required',
         ]);
+
+        $startDatetime =
+            $request->start_date . ' ' .
+            $request->start_hour . ':' .
+            $request->start_minute;
+
+        $endDatetime =
+            $request->end_date . ' ' .
+            $request->end_hour . ':' .
+            $request->end_minute;
+
+        if (strtotime($startDatetime) < time()) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'time' => '現在時刻より後の日時を指定してください。',
+                ]);
+        }
+
+        if (strtotime($endDatetime) <= strtotime($startDatetime)) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'time' => '終了日時は開始日時より後にしてください。',
+                ]);
+        }
 
         $reservation = \App\Reservation::with('equipment')
             ->where('user_id', Auth::id())
             ->where('status', 0)
             ->findOrFail($id);
 
-        $startTime = date('H:i:s', strtotime($request->start_datetime));
-        $endTime = date('H:i:s', strtotime($request->end_datetime));
+        $startTime = date('H:i:s', strtotime($startDatetime));
+        $endTime = date('H:i:s', strtotime($endDatetime));
 
         if (
             $startTime < $reservation->equipment->available_time_start ||
@@ -164,11 +224,11 @@ class ReservationController extends Controller
         }
 
         $overlap = Reservation::where('equipment_id', $reservation->equipment_id)
-        ->where('id', '!=', $reservation->id)
-        ->where('status', '!=', 2)
-        ->where('start_datetime', '<', $request->end_datetime)
-        ->where('end_datetime', '>', $request->start_datetime)
-        ->exists();
+            ->where('id', '!=', $reservation->id)
+            ->where('status', '!=', 2)
+            ->where('start_datetime', '<', $endDatetime)
+            ->where('end_datetime', '>', $startDatetime)
+            ->exists();
 
         if ($overlap) {
             return back()
@@ -180,8 +240,8 @@ class ReservationController extends Controller
 
         return view('reservation_edit_confirm', [
             'reservation' => $reservation,
-            'start_datetime' => $request->start_datetime,
-            'end_datetime' => $request->end_datetime,
+            'start_datetime' => $startDatetime,
+            'end_datetime' => $endDatetime,
         ]);
     }
 
@@ -231,8 +291,8 @@ class ReservationController extends Controller
             'end_datetime' => $request->end_datetime,
         ]);
 
-        return redirect()
-            ->route('reservation.detail', $reservation->id);
+            return redirect()
+            ->route('reservation.list');
     }
 
     public function cancelConfirm($id)

@@ -38,7 +38,7 @@ class AdminEquipmentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'name' => 'required|max:100',
             'category_id' => 'required|exists:categories,id',
             'start_hour' => 'required',
@@ -78,7 +78,7 @@ class AdminEquipmentController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'name' => 'required|max:100',
             'category_id' => 'required|exists:categories,id',
             'start_hour' => 'required',

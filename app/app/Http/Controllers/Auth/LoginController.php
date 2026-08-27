@@ -43,4 +43,13 @@ class LoginController extends Controller
     {
         return redirect()->route('login');
     }
+
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->role == 0) {
+            return redirect()->route('admin.top');
+        }
+
+        return redirect()->route('mypage');
+    }
 }

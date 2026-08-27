@@ -19,10 +19,16 @@ Route::get('/', function () {
 
 // 一般ユーザー：設備
 Route::get('/equipments', 'EquipmentController@index')
+    ->middleware('auth')
     ->name('equipment.list');
 
 Route::get('/equipments/{id}', 'EquipmentController@show')
+    ->middleware('auth')
     ->name('equipment.detail');
+
+Route::get('/equipments/{id}/calendar', 'EquipmentController@calendar')
+    ->middleware('auth')
+    ->name('equipment.calendar');
 
 
 // 一般ユーザー：予約

@@ -1,14 +1,27 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>予約完了</title>
-</head>
-<body>
-    <h1>予約が完了しました</h1>
+@extends('layouts.app')
 
-    <p>予約を受け付けました。</p>
+@section('content')
+<div class="container">
+    <div class="card">
+        <div class="card-body text-center">
 
-    <a href="{{ route('equipment.list') }}">設備一覧へ戻る</a>
-</body>
-</html>
+            <h1 class="mb-4">予約が完了しました</h1>
+
+            <p class="mb-4">
+                予約を受け付けました。
+            </p>
+
+            <a href="{{ route('reservation.list') }}"
+               class="btn btn-primary">
+                予約一覧へ
+            </a>
+
+            <a href="{{ route('mypage') }}"
+               class="btn btn-secondary">
+                マイページへ
+            </a>
+
+        </div>
+    </div>
+</div>
+@endsection
