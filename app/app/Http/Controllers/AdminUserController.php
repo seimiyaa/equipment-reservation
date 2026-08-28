@@ -27,6 +27,20 @@ class AdminUserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
             'role' => 'required|in:0,1',
+        ], [
+            'name.required' => 'ユーザー名を入力してください。',
+            'name.max' => 'ユーザー名は50文字以内で入力してください。',
+
+            'email.required' => 'メールアドレスを入力してください。',
+            'email.email' => '正しいメールアドレスを入力してください。',
+            'email.unique' => 'このメールアドレスはすでに登録されています。',
+
+            'password.required' => 'パスワードを入力してください。',
+            'password.min' => 'パスワードは8文字以上で入力してください。',
+            'password.confirmed' => 'パスワード確認が一致しません。',
+
+            'role.required' => '権限を選択してください。',
+            'role.in' => '権限の値が正しくありません。',
         ]);
 
         \App\User::create([
