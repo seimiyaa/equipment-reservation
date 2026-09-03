@@ -37,14 +37,13 @@
                 </select>
             </div>
 
-            <div class="col-md-3">
-                <label for="available_time">利用可能時間</label>
-
-                <select name="available_time"
-                        id="available_time"
+            <div class="col-md-2">
+                <label for="available_start_time">利用開始時間</label>
+                <select name="available_start_time"
+                        id="available_start_time"
                         class="form-control">
 
-                    <option value="">すべて</option>
+                    <option value="">指定なし</option>
 
                     @for ($hour = 0; $hour < 24; $hour++)
                         @foreach (['00', '30'] as $minute)
@@ -53,7 +52,7 @@
                             @endphp
 
                             <option value="{{ $time }}"
-                                {{ request('available_time') == $time ? 'selected' : '' }}>
+                                {{ request('available_start_time') == $time ? 'selected' : '' }}>
                                 {{ $time }}
                             </option>
                         @endforeach
@@ -61,7 +60,30 @@
                 </select>
             </div>
 
-            <div class="col-md-2 d-flex align-items-end">
+            <div class="col-md-2">
+                <label for="available_end_time">利用終了時間</label>
+                <select name="available_end_time"
+                        id="available_end_time"
+                        class="form-control">
+
+                    <option value="">指定なし</option>
+
+                    @for ($hour = 0; $hour < 24; $hour++)
+                        @foreach (['00', '30'] as $minute)
+                            @php
+                                $time = sprintf('%02d:%s', $hour, $minute);
+                            @endphp
+
+                            <option value="{{ $time }}"
+                                {{ request('available_end_time') == $time ? 'selected' : '' }}>
+                                {{ $time }}
+                            </option>
+                        @endforeach
+                    @endfor
+                </select>
+            </div>
+
+            <div class="col-md-1 d-flex align-items-end">
                 <button type="submit"
                         class="btn btn-primary btn-block">
                     検索

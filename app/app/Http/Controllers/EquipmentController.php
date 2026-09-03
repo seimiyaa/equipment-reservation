@@ -20,9 +20,20 @@ class EquipmentController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
-        if ($request->filled('available_time')) {
-            $query->where('available_time_start', '<=', $request->available_time)
-                ->where('available_time_end', '>=', $request->available_time);
+        if ($request->filled('available_start_time')) {
+            $query->where(
+                'available_time_start',
+                '<=',
+                $request->available_start_time
+            );
+        }
+
+        if ($request->filled('available_end_time')) {
+            $query->where(
+                'available_time_end',
+                '=',
+                $request->available_end_time
+            );
         }
 
         $equipments = $query

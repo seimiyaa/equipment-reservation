@@ -52,4 +52,20 @@ class LoginController extends Controller
 
         return redirect()->route('mypage');
     }
+
+    protected function validateLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        $user = \App\User::where('email', $request->email)->first();
+
+        if ($user && $user->del_flg) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => ['このユーザーは削除されています。'],
+            ]);
+        }
+    }
 }

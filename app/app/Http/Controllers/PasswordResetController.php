@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class PasswordResetController extends Controller
 {
@@ -10,6 +11,7 @@ class PasswordResetController extends Controller
     {
         return view('password_reset_request');
     }
+
     public function sendResetLink(Request $request)
     {
         $request->validate([
@@ -30,6 +32,17 @@ class PasswordResetController extends Controller
 
         $user->reset_token = $token;
         $user->save();
+        $resetUrl = route('password.reset.form', ['token' => $token]);
+
+        Mail::send([], [], function ($message) use ($user, $resetUrl) {
+            $message->to($user->email)
+                ->subject('パスワード再設定')
+                ->setBody(
+                    '<p>パスワード再設定はこちらから行ってください。</p>' .
+                    '<p><a href="' . $resetUrl . '">パスワードを再設定する</a></p>',
+                    'text/html'
+                );
+        });
 
         return view('password_reset_sent', compact('user'));
     }
