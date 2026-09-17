@@ -89,7 +89,59 @@ class ReservationController extends Controller
         ]);
     }
 
- 
+ public function store(Request $request)
+    {
+        $request->validate([
+            'equipment_id' => 'required|exists:equipments,id',
+            'start_datetime' => 'required|date',
+            'end_datetime' => 'required|date|after:start_datetime',
+        ]);
+
+        $startDatetime = $request->start_datetime;
+        $endDatetime = $request->end_datetime;
+
+        if (strtotime($startDatetime) < time()) {
+            return back()->withErrors([
+                'time' => '現在時刻より後の日時を指定してください。',
+            ]);
+        }
+
+        $equipment = \App\Equipment::findOrFail($request->equipment_id);
+
+        $startTime = date('H:i:s', strtotime($startDatetime));
+        $endTime = date('H:i:s', strtotime($endDatetime));
+
+        if (
+            $startTime < $equipment->available_time_start ||
+            $endTime > $equipment->available_time_end
+        ) {
+            return back()->withErrors([
+                'time' => '設備の利用可能時間内で予約してください。',
+            ]);
+        }
+
+        $overlap = Reservation::where('equipment_id', $request->equipment_id)
+            ->where('status', '!=', 2)
+            ->where('start_datetime', '<', $endDatetime)
+            ->where('end_datetime', '>', $startDatetime)
+            ->exists();
+
+        if ($overlap) {
+            return back()->withErrors([
+                'time' => 'その時間帯はすでに予約されています。',
+            ]);
+        }
+
+        $reservation = new Reservation();
+        $reservation->user_id = Auth::id();
+        $reservation->equipment_id = $request->equipment_id;
+        $reservation->start_datetime = $startDatetime;
+        $reservation->end_datetime = $endDatetime;
+        $reservation->status = 0;
+        $reservation->save();
+
+        return view('reservation_complete');
+    }
 
     public function index()
     {

@@ -19,7 +19,7 @@ class MypageController extends Controller
         $upcomingReservations = \App\Reservation::with('equipment')
             ->where('user_id', Auth::id())
             ->where('status', 0)
-            ->where('start_datetime', '>=', now())
+            ->whereDate('start_datetime', '>', now()->toDateString())
             ->orderBy('start_datetime', 'asc')
             ->get();
 
@@ -33,6 +33,22 @@ class MypageController extends Controller
             ->orderBy('start_datetime', 'desc')
             ->get();
 
-        return view('mypage', compact('upcomingReservations', 'pastReservations'));
+        $todayReservations = \App\Reservation::with('equipment')
+            ->where('status', 0)
+            ->whereDate('start_datetime', now()->toDateString())
+            ->orderBy('start_datetime', 'asc')
+            ->get()
+            ->groupBy('equipment_id');
+
+        $equipments = \App\Equipment::where('del_flg', false)
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return view('mypage', compact(
+            'upcomingReservations',
+            'pastReservations',
+            'todayReservations',
+            'equipments'
+        ));
     }
 }
