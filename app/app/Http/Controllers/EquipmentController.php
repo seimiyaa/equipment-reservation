@@ -13,11 +13,18 @@ class EquipmentController extends Controller
             ->where('del_flg', false);
 
         if ($request->filled('name')) {
-            $query->where('name', 'like', '%' . $request->name . '%');
+            $query->where(
+                'name',
+                'like',
+                '%' . $request->name . '%'
+            );
         }
 
         if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
+            $query->where(
+                'category_id',
+                $request->category_id
+            );
         }
 
         if ($request->filled('available_start_time')) {
@@ -42,14 +49,20 @@ class EquipmentController extends Controller
 
         $categories = \App\Category::all();
 
-        return view('equipment_list', compact('equipments', 'categories'));
+        return view(
+            'equipment_list',
+            compact('equipments', 'categories')
+        );
     }
 
     public function show($id)
     {
         $equipment = Equipment::findOrFail($id);
 
-        return view('equipment_detail', compact('equipment'));
+        return view(
+            'equipment_detail',
+            compact('equipment')
+        );
     }
 
     public function calendar(Request $request, $id)
@@ -57,7 +70,10 @@ class EquipmentController extends Controller
         $year = $request->year;
         $month = $request->month;
 
-        $reservations = \App\Reservation::where('equipment_id', $id)
+        $reservations = \App\Reservation::where(
+                'equipment_id',
+                $id
+            )
             ->where('status', '!=', 2)
             ->whereYear('start_datetime', $year)
             ->whereMonth('start_datetime', $month)

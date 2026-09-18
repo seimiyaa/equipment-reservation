@@ -35,177 +35,383 @@
             </p>
 
             <p>
+                <strong>利用可能時間：</strong>
+                {{ \Carbon\Carbon::parse($equipment->available_time_start)->format('H:i') }}
+                ～
+                {{ \Carbon\Carbon::parse($equipment->available_time_end)->format('H:i') }}
+            </p>
+
+            <p>
                 <strong>説明：</strong>
                 {{ $equipment->description }}
             </p>
         </div>
     </div>
 
+
     <div class="card">
         <div class="card-body">
 
-            <form action="{{ route('reservation.confirm') }}" method="POST">
+            <form action="{{ route('reservation.confirm') }}"
+                  method="POST">
+
                 @csrf
 
                 <input type="hidden"
                        name="equipment_id"
                        value="{{ $equipment->id }}">
 
+
+                {{-- 利用開始日時 --}}
                 <div class="form-group">
+
                     <label>利用開始日時</label>
 
                     <div class="form-row">
+
                         <div class="col-md-5">
+
                             <input type="date"
-                                name="start_date"
-                                class="form-control"
-                                value="{{ old('start_date') }}">
+                                   name="start_date"
+                                   class="form-control"
+                                   value="{{ old('start_date', request('date')) }}">
+
                         </div>
 
+
                         <div class="col">
-                            <select name="start_hour" class="form-control">
+
+                            <select name="start_hour"
+                                    class="form-control">
+
                                 @for ($hour = 0; $hour < 24; $hour++)
-                                    <option value="{{ sprintf('%02d', $hour) }}">
+
+                                    <option
+                                        value="{{ sprintf('%02d', $hour) }}"
+                                        {{ old('start_hour') == sprintf('%02d', $hour) ? 'selected' : '' }}
+                                    >
                                         {{ sprintf('%02d', $hour) }}
                                     </option>
+
                                 @endfor
+
                             </select>
+
                         </div>
 
-                        <div class="col-auto d-flex align-items-center">時</div>
+
+                        <div class="col-auto d-flex align-items-center">
+                            時
+                        </div>
+
 
                         <div class="col">
-                            <select name="start_minute" class="form-control">
-                                <option value="00">00</option>
-                                <option value="30">30</option>
+
+                            <select name="start_minute"
+                                    class="form-control">
+
+                                <option value="00"
+                                    {{ old('start_minute') == '00' ? 'selected' : '' }}>
+                                    00
+                                </option>
+
+                                <option value="30"
+                                    {{ old('start_minute') == '30' ? 'selected' : '' }}>
+                                    30
+                                </option>
+
                             </select>
+
                         </div>
 
-                        <div class="col-auto d-flex align-items-center">分</div>
+
+                        <div class="col-auto d-flex align-items-center">
+                            分
+                        </div>
+
                     </div>
+
                 </div>
 
+
+                {{-- 利用終了日時 --}}
                 <div class="form-group">
+
                     <label>利用終了日時</label>
 
                     <div class="form-row">
+
                         <div class="col-md-5">
+
                             <input type="date"
-                                name="end_date"
-                                class="form-control"
-                                value="{{ old('end_date') }}">
+                                   name="end_date"
+                                   class="form-control"
+                                   value="{{ old('end_date', request('date')) }}">
+
                         </div>
 
+
                         <div class="col">
-                            <select name="end_hour" class="form-control">
+
+                            <select name="end_hour"
+                                    class="form-control">
+
                                 @for ($hour = 0; $hour < 24; $hour++)
-                                    <option value="{{ sprintf('%02d', $hour) }}">
+
+                                    <option
+                                        value="{{ sprintf('%02d', $hour) }}"
+                                        {{ old('end_hour') == sprintf('%02d', $hour) ? 'selected' : '' }}
+                                    >
                                         {{ sprintf('%02d', $hour) }}
                                     </option>
+
                                 @endfor
+
                             </select>
+
                         </div>
 
-                        <div class="col-auto d-flex align-items-center">時</div>
+
+                        <div class="col-auto d-flex align-items-center">
+                            時
+                        </div>
+
 
                         <div class="col">
-                            <select name="end_minute" class="form-control">
-                                <option value="00">00</option>
-                                <option value="30">30</option>
+
+                            <select name="end_minute"
+                                    class="form-control">
+
+                                <option value="00"
+                                    {{ old('end_minute') == '00' ? 'selected' : '' }}>
+                                    00
+                                </option>
+
+                                <option value="30"
+                                    {{ old('end_minute') == '30' ? 'selected' : '' }}>
+                                    30
+                                </option>
+
                             </select>
+
                         </div>
 
-                        <div class="col-auto d-flex align-items-center">分</div>
+
+                        <div class="col-auto d-flex align-items-center">
+                            分
+                        </div>
+
                     </div>
+
                 </div>
 
+
+                {{-- 空き状況確認 --}}
                 <button type="button"
                         id="checkAvailability"
                         class="btn btn-outline-primary mb-2">
+
                     空き状況を確認
+
                 </button>
+
 
                 <p id="availabilityResult"></p>
 
+
                 <button type="submit"
                         class="btn btn-primary">
+
                     予約内容確認
+
                 </button>
+
 
                 <a href="{{ route('equipment.detail', $equipment->id) }}"
                    class="btn btn-secondary">
+
                     設備詳細画面へ戻る
+
                 </a>
+
             </form>
+
         </div>
     </div>
+
 </div>
 
+
 <script>
-document.getElementById('checkAvailability').addEventListener('click', function () {
-    const equipmentId =
-        document.querySelector('input[name="equipment_id"]').value;
 
-    const startDate =
-        document.querySelector('input[name="start_date"]').value;
+document
+    .getElementById('checkAvailability')
+    .addEventListener(
+        'click',
+        function () {
 
-    const startHour =
-        document.querySelector('select[name="start_hour"]').value;
+            const equipmentId =
+                document.querySelector(
+                    'input[name="equipment_id"]'
+                ).value;
 
-    const startMinute =
-        document.querySelector('select[name="start_minute"]').value;
 
-    const endDate =
-        document.querySelector('input[name="end_date"]').value;
+            const startDate =
+                document.querySelector(
+                    'input[name="start_date"]'
+                ).value;
 
-    const endHour =
-        document.querySelector('select[name="end_hour"]').value;
 
-    const endMinute =
-        document.querySelector('select[name="end_minute"]').value;
+            const startHour =
+                document.querySelector(
+                    'select[name="start_hour"]'
+                ).value;
 
-    const result =
-        document.getElementById('availabilityResult');
 
-    if (!startDate || !endDate) {
-        result.textContent = '開始日と終了日を入力してください。';
-        result.className = 'text-danger mt-2';
-        return;
-    }
+            const startMinute =
+                document.querySelector(
+                    'select[name="start_minute"]'
+                ).value;
 
-    const startDatetime =
-        startDate + ' ' + startHour + ':' + startMinute;
 
-    const endDatetime =
-        endDate + ' ' + endHour + ':' + endMinute;
+            const endDate =
+                document.querySelector(
+                    'input[name="end_date"]'
+                ).value;
 
-    fetch("{{ route('reservation.check_availability') }}", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            equipment_id: equipmentId,
-            start_datetime: startDatetime,
-            end_datetime: endDatetime
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        result.textContent = data.message;
 
-        if (data.available) {
-            result.className = 'text-success mt-2';
-        } else {
-            result.className = 'text-danger mt-2';
+            const endHour =
+                document.querySelector(
+                    'select[name="end_hour"]'
+                ).value;
+
+
+            const endMinute =
+                document.querySelector(
+                    'select[name="end_minute"]'
+                ).value;
+
+
+            const result =
+                document.getElementById(
+                    'availabilityResult'
+                );
+
+
+            /*
+             * 日付未入力
+             */
+            if (!startDate || !endDate) {
+
+                result.textContent =
+                    '開始日と終了日を入力してください。';
+
+                result.className =
+                    'text-danger mt-2';
+
+                return;
+            }
+
+
+            /*
+             * 日時を作る
+             */
+            const startDatetime =
+                startDate
+                + ' '
+                + startHour
+                + ':'
+                + startMinute;
+
+
+            const endDatetime =
+                endDate
+                + ' '
+                + endHour
+                + ':'
+                + endMinute;
+
+
+            /*
+             * Ajaxで空き状況確認
+             */
+            fetch(
+                "{{ route('reservation.check_availability') }}",
+                {
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type':
+                            'application/json',
+
+                        'Accept':
+                            'application/json',
+
+                        'X-CSRF-TOKEN':
+                            '{{ csrf_token() }}'
+
+                    },
+
+                    body: JSON.stringify({
+
+                        equipment_id:
+                            equipmentId,
+
+                        start_datetime:
+                            startDatetime,
+
+                        end_datetime:
+                            endDatetime
+
+                    })
+                }
+            )
+
+            .then(
+                response =>
+                    response.json()
+            )
+
+            .then(
+                data => {
+
+                    result.textContent =
+                        data.message;
+
+
+                    if (data.available) {
+
+                        result.className =
+                            'text-success mt-2';
+
+                    }
+
+                    else {
+
+                        result.className =
+                            'text-danger mt-2';
+
+                    }
+
+                }
+            )
+
+            .catch(
+                function () {
+
+                    result.textContent =
+                        '空き状況の確認に失敗しました。';
+
+                    result.className =
+                        'text-danger mt-2';
+
+                }
+            );
+
         }
-    })
-    .catch(() => {
-        result.textContent = '空き状況の確認に失敗しました。';
-        result.className = 'text-danger mt-2';
-    });
-});
+    );
+
 </script>
+
 @endsection
